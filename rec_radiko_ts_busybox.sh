@@ -456,7 +456,9 @@ get_hls_urls() {
   #  2nd line: Sub playlist
   curl --silent "https://radiko.jp/v3/station/stream/pc_html5/${station_id}.xml" \
     | xmllint --xpath "/urls/url[@timefree='1' and @areafree='${areafree}']/playlist_create_url/text()" - \
-    | tr -d '\r'
+    | sed 's#https://#\nhttps://#g' \
+    | sed '/^$/d' \
+    | head -n 1
 }
 
 # Define argument values
@@ -663,7 +665,7 @@ else
 fi
 
 # Generate pseudo random MD5 hash values (tracking key?)
-lsid=$(head -n 5 /dev/random | b64_enc | tr -dc '0-9a-f' | cut -c 1-32)
+lsid=$(date +%s%N | b64_enc | tr -dc '0-9a-f' | cut -c 1-32)
 
 # Record
 record_success='0'
@@ -674,9 +676,9 @@ chunk_no=0
 seek_timestamp=$(to_unixtime "${fromtime}")
 left_sec=$(($(to_unixtime "${totime}") - seek_timestamp))
 
-# Generate random base filename
+# Generate pseudo random base filename
 tmp_dir="$(realpath "${TMPDIR:-/tmp}")"
-tmp_filebase="recradikots_$(head -n 2 /dev/random | b64_enc | tr -dc '0-9a-zA-Z' | cut -c 1-8)"
+tmp_filebase="recradikots_$(date +%s%N | b64_enc | tr -dc '0-9a-zA-Z' | cut -c 1-8)"
 tmp_pathbase="${tmp_dir}/${tmp_filebase}"
 
 # ffmpeg chunk file list
@@ -708,7 +710,7 @@ for hls_url in $(get_hls_urls "${station_id}" "${is_areafree}"); do
     # chunk download
     if ! ffmpeg \
         -nostdin \
-        -loglevel error \
+        -loglevel info \
         -fflags +discardcorrupt \
         -headers "${ffmpeg_header}" \
         -http_seekable 0 \
