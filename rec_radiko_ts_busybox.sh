@@ -2,6 +2,7 @@
 #
 # Radiko timefree program recorder
 # Copyright (C) 2017-2026 uru (https://twitter.com/uru_2)
+# Copyright (C) 2026 ahi cobayahi (https://github.com/cobayahi)
 # License is MIT (see LICENSE file)
 set -eu
 
