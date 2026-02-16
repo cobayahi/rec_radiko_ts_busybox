@@ -3,7 +3,7 @@
 
 ## 動作確認環境
 - Windows 11 24H2
-    - busybox64u (https://frippery.org/files/busybox/) 1.38.0
+    - busybox64u (https://frippery.org/busybox/) 1.38.0
     - xmllint (https://www.zlatkovic.com/pub/libxml/64bit/)
         - libxml 2.9.3 (64bit)
         - libiconv 1.14 (64bit)
@@ -29,11 +29,10 @@ BusyBox ほかのパスや一時ファイルの保存先（環境変数 `TMPDIR`
 ```
 $ busybox sh ./rec_radiko_ts_busybox.sh -s RN1 -f 201705020825 -t 201705020835 -o "/hoge/2017-05-02 日経電子版NEWS(朝).m4a"
 ```
-オプション等の実行例は元プロジェクト (https://github.com/uru2/rec_radiko_ts) に準じます。
+オプション等の実行例は元プロジェクトに準じます。
 
 ## 元プロジェクト
-rec_radiko_ts
-https://github.com/uru2/rec_radiko_ts
+rec_radiko_ts (https://github.com/uru2/rec_radiko_ts)
 
 ## ライセンス
 元プロジェクトに準じた MIT License で配布しています。
