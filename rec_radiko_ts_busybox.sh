@@ -456,10 +456,10 @@ get_hls_urls() {
   #  1st line: Main playlist, requires the "-http_seekable 0" option in ffmpeg >= 4.3 (Suppresses HTTP "Range" request headers)
   #  2nd line: Sub playlist
   curl --silent "https://radiko.jp/v3/station/stream/pc_html5/${station_id}.xml" \
-    | xmllint --xpath "/urls/url[@timefree='1' and @areafree='${areafree}']/playlist_create_url/text()" - \
-    | sed 's#https://#\nhttps://#g' \
-    | sed '/^$/d' \
-    | head -n 1
+    | xmllint --xpath "/urls/url[@timefree='1' and @areafree='${areafree}']/playlist_create_url" - \
+    | sed 's#</playlist_create_url>#\n#g' \
+    | sed 's#<[^>]*>##g' \
+    | tr -d '\r'
 }
 
 # Define argument values
