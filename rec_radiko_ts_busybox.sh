@@ -666,7 +666,7 @@ else
 fi
 
 # Generate pseudo random MD5 hash values (tracking key?)
-lsid=$(date +%s%N | b64_enc | tr -dc '0-9a-f' | cut -c 1-32)
+lsid=$(echo "$(date +%s)$(uname -n)$$" | b64_enc | tr -dc '0-9a-f' | cut -c 1-32)
 
 # Record
 record_success='0'
@@ -679,7 +679,7 @@ left_sec=$(($(to_unixtime "${totime}") - seek_timestamp))
 
 # Generate pseudo random base filename
 tmp_dir="$(realpath "${TMPDIR:-/tmp}")"
-tmp_filebase="recradikots_$(date +%s%N | b64_enc | tr -dc '0-9a-zA-Z' | cut -c 1-8)"
+tmp_filebase="recradikots_$(echo "$(date +%s)$(uname -n)$$" | b64_enc | tr -dc '0-9a-zA-Z' | cut -c 1-8)"
 tmp_pathbase="${tmp_dir}/${tmp_filebase}"
 
 # ffmpeg chunk file list
