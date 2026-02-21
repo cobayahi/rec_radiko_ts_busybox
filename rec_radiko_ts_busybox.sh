@@ -435,6 +435,34 @@ b64_enc() {
 }
 
 #######################################
+# Generate 32-hex pseudo random ID
+# Arguments:
+#   None
+# Returns:
+#   32-hex string
+#######################################
+generate_lsid() {
+  if command -v md5sum > /dev/null ; then
+    printf '%s' "$(date +%s)$(uname -n)$$" | md5sum | cut -c 1-32
+    return 0
+  fi
+
+  awk -v "seed_date=$(date +%s)" -v "seed_pid=$$" -v "seed_uname=$(uname -n)" '
+    BEGIN {
+      v = 0;
+      for (i = 1; i <= length(seed_uname); i++) {
+        v = (v * 31) + index("abcdefghijklmnopqrstuvwxyz0123456789", substr(tolower(seed_uname), i, 1));
+      }
+      srand(seed_date + seed_pid + v);
+      for (i = 1; i <= 32; i++) {
+        printf("%x", int(rand() * 16));
+      }
+      print "";
+    }'
+  return 0
+}
+
+#######################################
 # Get HLS playlist URL list
 # Arguments:
 #   Station ID
@@ -666,7 +694,7 @@ else
 fi
 
 # Generate pseudo random MD5 hash values (tracking key?)
-lsid=$(echo "$(date +%s)$(uname -n)$$" | b64_enc | tr -dc '0-9a-f' | cut -c 1-32)
+lsid=$(generate_lsid)
 
 # Record
 record_success='0'
