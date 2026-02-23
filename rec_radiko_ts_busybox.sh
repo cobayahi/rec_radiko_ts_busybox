@@ -283,7 +283,7 @@ show_all_stations() {
   # Format to "{id}:{name}"
   curl --silent 'https://radiko.jp/v3/station/region/full.xml' \
     | xmllint --xpath '/region/stations/station[timefree="1"]/id/text() | /region/stations/station[timefree="1"]/name/text() | /region/stations/station[timefree="1"]/tf_max_delay/text()' - \
-    | paste -d ':' - - -
+    | awk 'ORS=NR%3?":":"\n"'
 }
 
 #######################################
