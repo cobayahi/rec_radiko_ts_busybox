@@ -442,18 +442,20 @@ b64_enc() {
 #   32-hex string
 #######################################
 generate_lsid() {
+  seed=$(date +%s)$(uname -n)$$
+
   if command -v md5sum > /dev/null ; then
-    printf '%s' "$(date +%s)$(uname -n)$$" | md5sum | cut -c 1-32
+    printf '%s' "${seed}" | md5sum | cut -c 1-32
     return 0
   fi
 
-  awk -v "seed_date=$(date +%s)" -v "seed_pid=$$" -v "seed_uname=$(uname -n)" '
+  awk -v "s=${seed}" '
     BEGIN {
-      v = 0;
-      for (i = 1; i <= length(seed_uname); i++) {
-        v = (v * 31) + index("abcdefghijklmnopqrstuvwxyz0123456789", substr(tolower(seed_uname), i, 1));
+      h = 5381;
+      for (i = 1; i <= length(s); i++) {
+        h = ((h * 33) + index("abcdefghijklmnopqrstuvwxyz0123456789-.", substr(tolower(s), i, 1))) % 2147483647;
       }
-      srand(seed_date + seed_pid + v);
+      srand(h);
       for (i = 1; i <= 32; i++) {
         printf("%x", int(rand() * 16));
       }
