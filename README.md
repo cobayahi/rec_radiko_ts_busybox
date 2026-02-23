@@ -10,6 +10,11 @@
         - zlib 1.2.8 (64bit)
     - ffmpeg 5.1.8
 
+また BusyBox を用いずに OS ネイティブのシェルで実行可能なことも、以下の環境で確認しています。
+- Artix (rolling release)
+    - curl 8.18.0
+    - xmllint using libxml version 21303
+    - ffmpeg 7.0.2
 
 ## オリジナルからの変更点
 動作確認に用いた環境で生じた問題に関連して、以下の変更を行っています。
