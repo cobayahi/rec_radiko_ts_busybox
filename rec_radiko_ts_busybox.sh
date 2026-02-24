@@ -492,6 +492,23 @@ get_hls_urls() {
     | tr -d '\r'
 }
 
+#######################################
+# Create a temporary directory
+# Arguments:
+#   None
+# Returns:
+#   0: Success
+#   1: Failed
+#######################################
+mk_temp_dir() {
+  if ! tmp_dir=$(mktemp -d "${TMPDIR:-.}/recradikots_XXXXXX") ; then
+    return 1
+  fi
+
+  realpath "${tmp_dir}"
+  return 0
+}
+
 # Define argument values
 station_id=
 fromtime=
@@ -708,7 +725,11 @@ seek_timestamp=$(to_unixtime "${fromtime}")
 left_sec=$(($(to_unixtime "${totime}") - seek_timestamp))
 
 # Generate temporary directory
-tmp_dir=$(realpath "$(mktemp -d "${TMPDIR:-.}/recradikots_XXXXXX")")
+tmp_dir=
+if ! tmp_dir="$(mk_temp_dir)"; then
+  echo "mktemp failed" >&2
+  exit 1
+fi
 
 # ffmpeg chunk file list
 touch "${tmp_dir}/filelist.txt"
