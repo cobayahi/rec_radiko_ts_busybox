@@ -445,7 +445,7 @@ generate_lsid() {
   seed=$(date +%s)$(uname -n)$$
 
   if command -v md5sum > /dev/null ; then
-    printf '%s' "${seed}" | md5sum | cut -c 1-32
+    awk -v s="$seed" 'BEGIN { printf "%s", s }' | md5sum | cut -c 1-32
     return 0
   fi
 
