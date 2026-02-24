@@ -445,7 +445,7 @@ generate_lsid() {
   seed=$(date +%s)$(uname -n)$$
 
   if command -v md5sum > /dev/null ; then
-    awk -v s="$seed" 'BEGIN {printf("%s", s)}' | md5sum | cut -c 1-32
+    awk -v s="${seed}" 'BEGIN {printf("%s", s)}' | md5sum | cut -c 1-32
     return 0
   fi
 
@@ -717,7 +717,7 @@ lsid=$(generate_lsid)
 
 # Record
 record_success='0'
-ffmpeg_header=$(awk -v token="$authtoken" -v id="$area_id" 'BEGIN {printf("X-Radiko-Authtoken: %s\r\nX-Radiko-AreaId: %s", token, id)}')
+ffmpeg_header=$(awk -v token="${authtoken}" -v id="${area_id}" 'BEGIN {printf("X-Radiko-Authtoken: %s\r\nX-Radiko-AreaId: %s", token, id)}')
 
 # Chunk download mode
 chunk_no=0
