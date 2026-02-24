@@ -445,7 +445,7 @@ generate_lsid() {
   seed=$(date +%s)$(uname -n)$$
 
   if command -v md5sum > /dev/null ; then
-    awk -v s="$seed" 'BEGIN { printf "%s", s }' | md5sum | cut -c 1-32
+    awk -v s="$seed" 'BEGIN {printf("%s", s)}' | md5sum | cut -c 1-32
     return 0
   fi
 
@@ -726,7 +726,7 @@ left_sec=$(($(to_unixtime "${totime}") - seek_timestamp))
 
 # Generate temporary directory
 tmp_dir=
-if ! tmp_dir="$(mk_temp_dir)"; then
+if ! tmp_dir="$(mk_temp_dir)" ; then
   echo "mktemp failed" >&2
   exit 1
 fi
