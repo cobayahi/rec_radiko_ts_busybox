@@ -717,7 +717,7 @@ lsid=$(generate_lsid)
 
 # Record
 record_success='0'
-ffmpeg_header=$(printf 'X-Radiko-Authtoken: %s\r\nX-Radiko-AreaId: %s' "${authtoken}" "${area_id}")
+ffmpeg_header=$(awk -v token="$authtoken" -v id="$area_id" 'BEGIN {printf("X-Radiko-Authtoken: %s\r\nX-Radiko-AreaId: %s", token, id)}')
 
 # Chunk download mode
 chunk_no=0
