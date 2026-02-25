@@ -2,12 +2,13 @@
 このスクリプトは [@uru2](https://github.com/uru2) 氏の rec_radiko_ts (https://github.com/uru2/rec_radiko_ts) を BusyBox 上で動作させるために、最小限の修正を加えたフォークです。
 
 ## 動作確認環境
+以前に動作確認環境として挙げていた [zlatkovic.com 配布の xmllint](https://www.zlatkovic.com/libxml.en.html) では `-l` オプションの表示に不具合を生じていたため、現在は MSYS2 Packages 等のよりモダンなビルドを推奨しています。
 - Windows 11 24H2
     - busybox64u (https://frippery.org/busybox/) 1.38.0
-    - xmllint (https://www.zlatkovic.com/pub/libxml/64bit/)
-        - libxml 2.9.3 (64bit)
-        - libiconv 1.14 (64bit)
-        - zlib 1.2.8 (64bit)
+    - xmllint (https://packages.msys2.org/)
+        - libxml 2.15.1 (mingw64)
+        - libiconv 1.18 (mingw64)
+        - zlib 1.3.1 (mingw64)
     - ffmpeg 5.1.8
 
 BusyBox を用いずに OS のネイティブシェルで実行可能なことも、以下の環境で確認しています。
