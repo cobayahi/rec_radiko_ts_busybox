@@ -310,7 +310,7 @@ extract_url_params() {
 
     # 24:00-28:59 -> next day 0:00-4:59
     if echo "${fromtime}" | grep -q -e '^[0-9]\{8,8\}2[4-8]' ; then
-      utime_date=$(($(to_unixtime "$(echo "${fromtime}" | cut -c 1-8)000000") + 86400))
+      utime_date=$(($(to_unixtime "$(echo "${fromtime}" | awk '{print substr($0,1,8)}')000000") + 86400))
       utime_hour=$((($(echo "${fromtime}" | awk '{print substr($0,9,2)}') - 24) * 3600))
       utime_minute=$(($(echo "${fromtime}" | awk '{print substr($0,11,2)}') * 60))
       utime_second=$(($(echo "${fromtime}" | awk '{print substr($0,13,2)}') - 0))
@@ -332,7 +332,7 @@ extract_url_params() {
   fi
 
   # Target program date (0:00-4:59 -> previous day)
-  program_date=$(to_datetime "$(($(to_unixtime "${fromtime}") - 18000))" | cut -c 1-8)
+  program_date=$(to_datetime "$(($(to_unixtime "${fromtime}") - 18000))" | awk '{print substr($0,1,8)}')
 
   # Extract record end datetime
   totime=$(curl --silent "https://api.radiko.jp/program/v3/date/${program_date}/area/${area_id}.xml" \
@@ -401,7 +401,7 @@ radiko_auth() {
   fi
 
   # Detected area ID (prefecture)
-  area_id=$(echo "${auth2_res}" | head -n 1 | cut -d ',' -f1)
+  area_id=$(echo "${auth2_res}" | head -n 1 | awk -F ',' '{print $1}')
 
   echo "${authtoken},${area_id}"
   return 0
@@ -469,7 +469,7 @@ get_hls_urls() {
 #######################################
 mk_temp_dir() {
   # Alternative to "mktemp -d"
-  tmp_dir="$(realpath "${TMPDIR:-/tmp}")/recradikots_$(head -n 2 /dev/random | b64_enc | tr -dc '0-9a-zA-Z' | cut -c 1-8)"
+  tmp_dir="$(realpath "${TMPDIR:-/tmp}")/recradikots_$(head -n 2 /dev/random | b64_enc | tr -dc '0-9a-zA-Z' | awk '{print substr($0,1,8)}')"
   if [ -d "${tmp_dir}" ]; then
     echo "Already exists ${tmp_dir}" >&2
     return 1
@@ -549,9 +549,9 @@ if [ -n "${url}" ]; then
     exit 1
   fi
 
-  station_id=$(echo "${url_params}" | cut -d ',' -f1)
-  fromtime=$(echo "${url_params}" | cut -d ',' -f2)
-  totime=$(echo "${url_params}" | cut -d ',' -f3)
+  station_id=$(echo "${url_params}" | awk -F ',' '{print $1}')
+  fromtime=$(echo "${url_params}" | awk -F ',' '{print $2}')
+  totime=$(echo "${url_params}" | awk -F ',' '{print $3}')
 fi
 
 # Convert to UNIX time
@@ -634,8 +634,8 @@ if [ -n "${mail}" ]; then
     # Max 3 times
     if res=$(radiko_login "${mail}" "${password}") ; then
       # Success
-      radiko_session=$(echo "${res}" | cut -d ',' -f1)
-      is_areafree=$(echo "${res}" | cut -d ',' -f2)
+      radiko_session=$(echo "${res}" | awk -F ',' '{print $1}')
+      is_areafree=$(echo "${res}" | awk -F ',' '{print $2}')
       break
     fi
 
@@ -657,8 +657,8 @@ while : ; do
   # Max 3 times
   if res=$(radiko_auth "${radiko_session}") ; then
     # Success
-    authtoken=$(echo "${res}" | cut -d ',' -f1)
-    area_id=$(echo "${res}" | cut -d ',' -f2)
+    authtoken=$(echo "${res}" | awk -F ',' '{print $1}')
+    area_id=$(echo "${res}" | awk -F ',' '{print $2}')
     break
   fi
 
@@ -684,7 +684,7 @@ else
 fi
 
 # Generate pseudo random MD5 hash values (tracking key?)
-lsid=$(head -n 5 /dev/random | b64_enc | tr -dc '0-9a-f' | cut -c 1-32)
+lsid=$(head -n 5 /dev/random | b64_enc | tr -dc '0-9a-f' | awk '{print substr($0,1,32)}')
 
 # Record
 record_success='0'
