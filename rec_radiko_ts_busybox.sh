@@ -402,7 +402,7 @@ radiko_auth() {
   fi
 
   # Detected area ID (prefecture)
-  area_id=$(echo "${auth2_res}" | head -n 1 | awk -F ',' '{print $1}')
+  area_id=$(echo "${auth2_res}" | awk -F ',' 'NR==1 {print $1; exit}')
 
   echo "${authtoken},${area_id}"
   return 0
