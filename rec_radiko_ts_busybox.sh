@@ -18,7 +18,7 @@ readonly AUTHKEY_VALUE='bcd151073c03b352e1ef2fd66c32209da9ca0afa'
 #######################################
 show_usage() {
   cat << _EOT_
-Usage: $(basename "$0") [options]
+Usage: ${0##*/} [options]
 Options:
   -s STATION      Station ID
   -f DATETIME     Record start datetime (%Y%m%d%H%M or %Y%m%d%H%M%S or %H%M or %H%M%S format, JST)
