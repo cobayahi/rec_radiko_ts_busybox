@@ -154,9 +154,6 @@ radiko_logout() {
 #   1: Failed
 #######################################
 to_unixtime() {
-  # for gawk
-  #utime=$(echo "$1" | gawk '{ print mktime(sprintf("%d %d %d %d %d %d", substr($0, 0, 4), substr($0, 5, 2), substr($0, 7, 2), substr($0, 9, 2), substr($0, 11, 2), ((length($0) == 14) ? substr($0, 13, 2) : 0)), 1) - 32400 }')
-
   utime=$(echo "$1" \
     | awk '{
       date_str = $1;
@@ -223,9 +220,6 @@ to_unixtime() {
 #   1: Failed
 #######################################
 to_datetime() {
-  # for gawk
-  #datetime=$(echo "$1" | gawk '{ print strftime("%Y%m%d%H%M%S", int($0) + 32400, 1) }')
-
   datetime=$(echo "$1" \
     | awk '{
       ut = $0 + 32400;  # JST(UTC+9)
