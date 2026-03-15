@@ -726,7 +726,7 @@ if ! tmp_dir="$(mk_temp_dir)" ; then
 fi
 
 # ffmpeg chunk file list
-touch "${tmp_dir}/filelist.txt"
+: > "${tmp_dir}/filelist.txt" # Create empty file
 
 # New mode playlist only
 for hls_url in $(get_hls_urls "${station_id}" "${is_areafree}"); do
