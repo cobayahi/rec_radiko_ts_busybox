@@ -560,10 +560,12 @@ done
 
 # DateTime string completion
 if echo "${fromtime}" | awk 'END {exit !($0 ~ /^([0-1][0-9]|2[0-3])[0-5][0-9]([0-5][0-9])?$/)}' ; then
-  fromtime="$(date '+%Y%m%d')${fromtime}"
+  # fromtime="$(date '+%Y%m%d')${fromtime}"
+  fromtime="$(awk -v dt="$(to_datetime "$(date +%s)")" 'BEGIN {printf("%s", substr(dt, 1, 8))}')${fromtime}"
 fi
 if echo "${totime}" | awk 'END {exit !($0 ~ /^([0-1][0-9]|2[0-3])[0-5][0-9]([0-5][0-9])?$/)}' ; then
-  totime="$(date '+%Y%m%d')${totime}"
+  # totime="$(date '+%Y%m%d')${totime}"
+  totime="$(awk -v dt="$(to_datetime "$(date +%s)")" 'BEGIN {printf("%s", substr(dt, 1, 8))}')${totime}"
 fi
 
 # Get program infomation from URL (-u option)
