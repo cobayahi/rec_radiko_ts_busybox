@@ -500,7 +500,7 @@ mk_temp_dir() {
   fi
 
   # Return absolute path (compatible with `realpath "${tmp_dir}"`)
-  awk -v rpath="$(cd "$tmp_dir" && pwd)" 'BEGIN {printf("%s\n", rpath)}'
+  awk -v rpath="$(cd "${tmp_dir}" && pwd)" 'BEGIN {printf("%s\n", rpath)}'
   return 0
 }
 
