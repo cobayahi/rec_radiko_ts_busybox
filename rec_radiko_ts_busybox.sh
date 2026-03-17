@@ -372,7 +372,8 @@ radiko_auth() {
     return 1
   fi
 
-  partialkey=$(echo "${AUTHKEY_VALUE}" | dd bs=1 "skip=${keyoffset}" "count=${keylength}" 2> /dev/null | b64_enc | tr -d '\n')
+  partialkey=$(echo "${AUTHKEY_VALUE}" \
+    | awk -v skip="${keyoffset}" -v count="${keylength}" '{printf("%s", substr($0, skip+1, count))}' | b64_enc | tr -d '\n')
   if [ -z "${partialkey}" ]; then
     return 1
   fi
