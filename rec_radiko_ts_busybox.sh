@@ -623,10 +623,12 @@ if [ "${utime_to}" -lt 0 ]; then
   echo 'Invalid "Record end datetime" format' >&2
   exit 1
 fi
-if [ -n "${duration}" ] && echo "${duration}" | awk 'END {exit ($0 ~ /[^0-9]/)}' ; then
-  # -d value is invalid
-  echo 'Invalid "Record minute"' >&2
-  exit 1
+if [ -n "${duration}" ]; then
+    if ! echo "${duration}" | tr -cd '0-9' | awk 'END {exit ($0 ~ /[^0-9]/)}'; then
+      # -d value is invalid
+      echo 'Invalid "Record minute"' >&2
+      exit 1
+    fi
 fi
 
 # Calculate totime (-d option)
