@@ -480,11 +480,13 @@ get_hls_urls() {
   # TimeFree 30 playlist (Possibly bandwidth limited)
   #  1st line: Main playlist, requires the "-http_seekable 0" option in ffmpeg >= 4.3 (Suppresses HTTP "Range" request headers)
   #  2nd line: Sub playlist
-  curl --silent "https://radiko.jp/v3/station/stream/pc_html5/${station_id}.xml" \
+  raw_urls=$(curl --silent "https://radiko.jp/v3/station/stream/pc_html5/${station_id}.xml" \
     | xmllint --xpath "/urls/url[@timefree='1' and @areafree='${areafree}']/playlist_create_url" - \
     | sed 's#</playlist_create_url>#\n#g' \
-    | sed 's#<[^>]*>##g' \
-    | tr -d '\r'
+    | sed 's#<[^>]*>##g')
+  
+  # Re-expand literal "\n" on environments that don't interpret it
+  awk -v expand="${raw_urls}" 'BEGIN {printf ("%s", expand)}' | sed '/^$/d'
 }
 
 #######################################
