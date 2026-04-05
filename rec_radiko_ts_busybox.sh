@@ -53,7 +53,7 @@ radiko_login() {
       --data-urlencode "pass=${password}" \
       --output - \
       'https://radiko.jp/v4/api/member/login' \
-    | tr -d '\r\n') || return 1
+    | awk '{gsub(/\r/, ""); printf("%s", $0)}') || return 1
 
   # Extract login result
   radiko_session=$(echo "${login_json}" | extract_login_value 'radiko_session')
@@ -362,7 +362,7 @@ radiko_auth() {
       --dump-header - \
       --output /dev/null \
       'https://radiko.jp/v2/api/auth1' \
-    | tr -d '\r') || return 1
+    | awk '{gsub(/\r/, ""); print}') || return 1
 
   # Get partial key
   authtoken=$(echo "${auth1_res}" | sed -n 's/^[xX]-[rR][aA][dD][iI][kK][oO]-[aU][uU][tT][hH][tT][oO][kK][eE][nN]:[ \t]*\(.\{1,\}\)$/\1/p')
@@ -373,7 +373,7 @@ radiko_auth() {
   fi
 
   partialkey=$(echo "${AUTHKEY_VALUE}" \
-    | awk -v skip="${keyoffset}" -v count="${keylength}" '{printf("%s", substr($0, skip+1, count))}' | b64_enc | tr -d '\n')
+    | awk -v skip="${keyoffset}" -v count="${keylength}" '{printf("%s", substr($0, skip+1, count))}' | b64_enc | awk '{printf("%s", $0)}')
   if [ -z "${partialkey}" ]; then
     return 1
   fi
@@ -390,7 +390,7 @@ radiko_auth() {
       --header "X-Radiko-AuthToken: ${authtoken}" \
       --header "X-Radiko-PartialKey: ${partialkey}" \
       "https://radiko.jp/v2/api/auth2${auth2_url_param}" \
-    | tr -d '\r') || return 1
+    | awk '{gsub(/\r/, ""); print}') || return 1
   if [ -z "${auth2_res}" ] || [ "${auth2_res}" = 'OUT' ]; then
     # Not detected access area(prefecture) or detected not in Japan
     return 1
@@ -486,7 +486,7 @@ get_hls_urls() {
     | sed 's#<[^>]*>##g')
   
   # Re-expand literal "\n" on environments that don't interpret it
-  awk -v expand="${raw_urls}" 'BEGIN {printf ("%s", expand)}' | sed '/^$/d'
+  awk -v expand="${raw_urls}" 'BEGIN {printf("%s", expand)}' | sed '/^$/d'
 }
 
 #######################################
@@ -627,7 +627,7 @@ if [ "${utime_to}" -lt 0 ]; then
   exit 1
 fi
 if [ -n "${duration}" ]; then
-  if ! echo "${duration}" | tr -d '\n' | awk 'END {exit ($0 ~ /[^0-9]/)}'; then
+  if ! echo "${duration}" | awk '{printf("%s", $0)}' | awk 'END {exit ($0 ~ /[^0-9]/)}'; then
     # -d value is invalid
     echo 'Invalid "Record minute"' >&2
     exit 1
