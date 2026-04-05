@@ -365,9 +365,9 @@ radiko_auth() {
     | awk '{gsub(/\r/, ""); print}') || return 1
 
   # Get partial key
-  authtoken=$(echo "${auth1_res}" | sed -n 's/^[xX]-[rR][aA][dD][iI][kK][oO]-[aU][uU][tT][hH][tT][oO][kK][eE][nN]:[ \t]*\(.\{1,\}\)$/\1/p')
-  keyoffset=$(echo "${auth1_res}" | sed -n 's/^[xX]-[rR][aA][dD][iI][kK][oO]-[kK][eE][yY][oO][fF][fF][sS][eE][tT]:[ \t]*\(.\{1,\}\)$/\1/p')
-  keylength=$(echo "${auth1_res}" | sed -n 's/^[xX]-[rR][aA][dD][iI][kK][oO]-[kK][eE][yY][lL][eE][nN][gG][tT][hH]:[ \t]*\(.\{1,\}\)$/\1/p')
+  authtoken=$(echo "${auth1_res}" | awk -F ': ' 'tolower($1)=="x-radiko-authtoken" {print $2}')
+  keyoffset=$(echo "${auth1_res}" | awk -F ': ' 'tolower($1)=="x-radiko-keyoffset" {print $2}')
+  keylength=$(echo "${auth1_res}" | awk -F ': ' 'tolower($1)=="x-radiko-keylength" {print $2}')
   if [ -z "${authtoken}" ] || [ -z "${keyoffset}" ] || [ -z "${keylength}" ]; then
     return 1
   fi
