@@ -84,9 +84,6 @@ radiko_login() {
 extract_login_value() {
   name=$1
 
-  # for jq
-  #value=$(cat - | jq -r ".${name}")
-
   value=$(cat - \
     | awk -v "name=${name}" '
       BEGIN {
