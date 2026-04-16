@@ -1,8 +1,8 @@
 # rec_radiko_ts_busybox
-[@uru2](https://github.com/uru2) 氏の rec_radiko_ts (https://github.com/uru2/rec_radiko_ts) を、BusyBox 等のより小さなコマンド環境で動作させることを目的としたフォークです。[busybox-w32 (BusyBox for Windows)](https://frippery.org/busybox/) での動作をメインターゲットとしつつ、より少/省コマンドな環境も見据えて、オリジナルで使用されているいくつかのロジックを awk ベースの処理やシェル組込み機能へと置換しています。
+[@uru2](https://github.com/uru2) 氏の rec_radiko_ts (https://github.com/uru2/rec_radiko_ts) を、BusyBox 等のより小さなコマンド環境で動作させることを目的としたフォークです。[busybox-w32 (BusyBox for Windows)](https://frippery.org/busybox/) での動作をメインターゲットとしつつ、より少/省コマンドな環境も見据えて、オリジナルで使用されているロジックを awk ベースの処理やシェル組込み機能へと置換しています。
 
 ## 動作確認環境
-以前に動作確認環境として挙げていた [zlatkovic.com 配布の xmllint](https://www.zlatkovic.com/libxml.en.html) では `-l` オプションの表示に不具合を生じていたため、現在は MSYS2 Packages 等のよりモダンなビルドを推奨しています。
+[zlatkovic.com 配布の xmllint](https://www.zlatkovic.com/libxml.en.html) では `-l` オプションの表示に不具合を生じるため、MSYS2 Packages 等のモダンなビルドの利用を推奨します。
 - Windows 11 24H2
     - busybox64u (https://frippery.org/busybox/) 1.38.0
     - xmllint (https://packages.msys2.org/)
@@ -33,8 +33,8 @@ Windows 等 `/dev/random` が利用できない環境に対応するため、乱
 - 一時ファイルの保存先である一時ディレクトリの生成を `mktemp` にて実装しています。
     - 環境変数 `TMPDIR` 未指定時の挙動も異なります（[使い方](#使い方) を参照ください）。
 
-### xmllint 出力の改行問題に対応
-xmllint を用いたタイムフリープレイリスト群の抽出処理に不具合を生じたため、処理内容を調整しています。
+### CRLF で生じる問題に対応
+オリジナルのコードそのままでは xmllint を用いたタイムフリープレイリスト群の抽出処理等、改行コードの違いに由来する不具合を複数確認しているため、CRLF/LF 両環境での動作性を担保できるロジックへと変更しています。
 
 ### FFmpeg のログレベル
 chunk ダウンロード時のログレベルを、オリジナルの `error` から `info` に変更しています。必要に応じて他のレベルへ変更してください。
