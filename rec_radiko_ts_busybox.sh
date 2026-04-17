@@ -661,8 +661,8 @@ if [ -n "${mail}" ]; then
     # Max 3 times
     if res=$(radiko_login "${mail}" "${password}") ; then
       # Success
-      radiko_session=$(echo "${res}" | awk -F ',' '{print $1}')
-      is_areafree=$(echo "${res}" | awk -F ',' '{print $2}')
+      radiko_session=$(echo "${res}" | awk -F ',' '{gsub(/\r/, "", $1); printf("%s", $1)}')
+      is_areafree=$(echo "${res}" | awk -F ',' '{gsub(/\r/, "", $2); printf("%s", $2)}')
       break
     fi
 
