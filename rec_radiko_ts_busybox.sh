@@ -291,16 +291,22 @@ extract_url_params() {
   # Extract station ID and record start datetime
   station_id=
   fromtime=
+  # for grep
+  #   if echo "${url}" | grep -q -e '^https\{0,1\}://radiko\.jp/#!/ts/' ; then
   if echo "${url}" | awk 'END {exit !($0 ~ /^https?:\/\/radiko\.jp\/#!\/ts\//)}' ; then
     # "https://radiko.jp/#!/ts/{station_id}/{fromtime}"
     station_id=$(echo "${url}" | sed -n 's;https\{0,1\}://radiko\.jp/#!/ts/\(.\{1,\}\)/[0-9]\{14,14\}$;\1;p')
     fromtime=$(echo "${url}" | sed -n 's;^https\{0,1\}://radiko\.jp/#!/ts/.\{1,\}/\([0-9]\{14,14\}\)$;\1;p')
+  # for grep
+  #   elif echo "${url}" | grep -q -e '^https\{0,1\}://radiko\.jp/share/' ; then
   elif echo "${url}" | awk 'END {exit !($0 ~ /^https?:\/\/radiko\.jp\/share\//)}' ; then
     # "https://radiko.jp/share/?t={fromtime}&sid={station_id}"
     station_id=$(echo "${url}" | sed -n 's;https\{0,1\}://radiko\.jp/share/.*[?&]sid=\([^&]\{1,\}\).*;\1;p')
     fromtime=$(echo "${url}" | sed -n 's;https\{0,1\}://radiko\.jp/share/.*[?&]t=\([0-9]\{1,14\}\).*;\1;p')
 
     # 24:00-28:59 -> next day 0:00-4:59
+    # for grep
+    #   if echo "${fromtime}" | grep -q -e '^[0-9]\{8,8\}2[4-8]' ; then
     if echo "${fromtime}" | awk 'END {exit !($0 ~ /^[0-9]{8}2[4-8]/)}' ; then
       utime_date=$(($(to_unixtime "$(echo "${fromtime}" | awk '{print substr($0,1,8)}')000000") + 86400))
       utime_hour=$((($(echo "${fromtime}" | awk '{print substr($0,9,2)}') - 24) * 3600))
@@ -560,9 +566,13 @@ while getopts s:f:t:d:m:u:p:o:l option; do
 done
 
 # DateTime string completion
+# for grep
+#   if echo "${fromtime}" | grep -q -E -e '^([0-1][0-9]|2[0-3])[0-5][0-9]([0-5][0-9]){0,1}$' ; then
 if echo "${fromtime}" | awk 'END {exit !($0 ~ /^([0-1][0-9]|2[0-3])[0-5][0-9]([0-5][0-9])?$/)}' ; then
   fromtime="$(date '+%Y%m%d')${fromtime}"
 fi
+# for grep
+#   if echo "${totime}" | grep -q -E -e '^([0-1][0-9]|2[0-3])[0-5][0-9]([0-5][0-9]){0,1}$' ; then
 if echo "${totime}" | awk 'END {exit !($0 ~ /^([0-1][0-9]|2[0-3])[0-5][0-9]([0-5][0-9])?$/)}' ; then
   totime="$(date '+%Y%m%d')${totime}"
 fi
@@ -624,11 +634,15 @@ if [ "${utime_to}" -lt 0 ]; then
   exit 1
 fi
 if [ -n "${duration}" ]; then
-  if ! echo "${duration}" | awk 'END {exit ($0 ~ /[^0-9]/)}'; then
-    # -d value is invalid
-    echo 'Invalid "Record minute"' >&2
-    exit 1
-  fi
+  case "${duration}" in
+    *[!0-9]*)
+      # -d value is invalid
+      echo 'Invalid "Record minute"' >&2
+      exit 1
+      ;;
+    *)
+      ;;
+  esac
 fi
 
 # Calculate totime (-d option)
@@ -645,12 +659,24 @@ if [ -n "${duration}" ]; then
 fi
 
 # Second string completion
-if echo "${fromtime}" | awk 'END {exit !($0 ~ /^[0-9]{12}$/)}' ; then
-  fromtime="${fromtime}00"
-fi
-if echo "${totime}" | awk 'END {exit !($0 ~ /^[0-9]{12}$/)}' ; then
-  totime="${totime}00"
-fi
+case "${fromtime}" in
+  *[!0-9]*|'')
+    ;;
+  *)
+    if [ "${#fromtime}" -eq 12 ]; then
+      fromtime="${fromtime}00"
+    fi
+    ;;
+esac
+case "${totime}" in
+  *[!0-9]*|'')
+    ;;
+  *)
+    if [ "${#totime}" -eq 12 ]; then
+      totime="${totime}00"
+    fi
+    ;;
+esac
 
 # Login premium
 radiko_session=
@@ -704,10 +730,12 @@ if [ -z "${output}" ]; then
   output="${station_id}_${fromtime}_${totime}.m4a"
 else
   # Fix file path extension
-  if ! echo "${output}" | awk 'END {exit !($0 ~ /\.m4a$/)}' ; then
-    # Add .m4a
-    output="${output}.m4a"
-  fi
+  case "${output}" in
+    *.m4a)
+      ;; 
+    *) output="${output}.m4a"
+      ;;
+  esac
 fi
 
 # Generate pseudo random MD5 hash values (tracking key?)
