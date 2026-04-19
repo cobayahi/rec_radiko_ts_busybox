@@ -624,7 +624,7 @@ if [ "${utime_to}" -lt 0 ]; then
   exit 1
 fi
 if [ -n "${duration}" ]; then
-  if ! echo "${duration}" | awk '{printf("%s", $0)}' | awk 'END {exit ($0 ~ /[^0-9]/)}'; then
+  if ! echo "${duration}" | awk 'END {exit ($0 ~ /[^0-9]/)}'; then
     # -d value is invalid
     echo 'Invalid "Record minute"' >&2
     exit 1
@@ -661,8 +661,8 @@ if [ -n "${mail}" ]; then
     # Max 3 times
     if res=$(radiko_login "${mail}" "${password}") ; then
       # Success
-      radiko_session=$(echo "${res}" | awk -F ',' '{gsub(/\r/, "", $1); printf("%s", $1)}')
-      is_areafree=$(echo "${res}" | awk -F ',' '{gsub(/\r/, "", $2); printf("%s", $2)}')
+      radiko_session=$(echo "${res}" | awk -F ',' '{gsub(/\r/, ""); printf("%s", $1)}')
+      is_areafree=$(echo "${res}" | awk -F ',' '{gsub(/\r/, ""); printf("%s", $2)}')
       break
     fi
 
